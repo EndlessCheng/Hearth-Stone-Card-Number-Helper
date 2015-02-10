@@ -1,4 +1,5 @@
-import wx
+# -*- coding: utf-8 -*-
+import wx  # wx.version() == '3.0.2.0'
 import core
 
 

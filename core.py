@@ -2,6 +2,8 @@
 import wx  # wx.version() == '3.0.2.0'
 
 
+WINDOW_SIZE = (380, 123)
+
 CARD_POOL_SIZE = 30
 MAX_CARD_SIZE = 10
 
@@ -72,15 +74,19 @@ class MainPanel(wx.Panel):
 
 class MainFrame(wx.Frame):
     def __init__(self):
-        wx.Frame.__init__(self, None, title=u"炉石传说-对手牌号记录器", size=(380, 123))
+        wx.Frame.__init__(self, None, title=u"炉石传说-对手牌号记录器", size=WINDOW_SIZE)
         main_panel = MainPanel(self)
         box_sizer = wx.BoxSizer(wx.HORIZONTAL)
         box_sizer.Add(main_panel, 1, wx.EXPAND)
         self.SetSizer(box_sizer)
 
 
-if __name__ == '__main__':
+def main():
     app = wx.App()
     frame = MainFrame()
     frame.Show()
     app.MainLoop()
+
+
+if __name__ == '__main__':
+    main()

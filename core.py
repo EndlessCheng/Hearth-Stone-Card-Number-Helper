@@ -17,30 +17,34 @@ class MainPanel(wx.Panel):
         self.SetBackgroundColour(wx.Colour(207, 230, 255))
         button_sizer = wx.GridSizer(rows=2, cols=MAX_CARD_SIZE)
 
-        self.hand_cards = 3
-        self.card_pool_size = CARD_POOL_SIZE - self.hand_cards
-        self.next_card_number = self.hand_cards + 1
+        self.hand_card_amount = 3 if opp_first else 4
+        self.card_pool_size = CARD_POOL_SIZE - self.hand_card_amount
+        self.next_card_number = self.hand_card_amount + 1
 
         # self.button_panel = wx.Panel(self, -1, size=(1000, 10000))
         self.button_list = []
         for i in range(1, MAX_CARD_SIZE + 1):
             button = wx.Button(self, -1, str(i))
             button.Bind(wx.EVT_BUTTON, self.use_card)
-            if i > self.hand_cards:
+            if i > self.hand_card_amount:
                 button.Hide()
             button_sizer.Add(button, 0, wx.EXPAND | wx.ALL, 3)
             self.button_list.append(button)
 
+        if not opp_first:
+            self.add_known_name_card(u"硬币")
+
         button_labels = (
             (u"重置", self.reset),
             (u"抽牌", self.draw_card),
-            # (u"加随从", self.OnPause),
-            # (u"加法术", self.OnPause),
-            # (u"窃", self.OnStepForward),
-            # (u"加零件", self.OnPause),
-            # (u"加香蕉", self.OnPause),
-            # (u"牌库+1", self.OnStepForward),
-            # (u"牌库-1", self.OnStepForward),
+            (u"随从", self.add_monster),
+            (u"法术", self.add_magic),
+            (u"窃取", self.add_steal),
+            (u"零件", self.add_machine_parts),
+            (u"硬币", self.add_coin),
+            (u"香蕉", self.add_banana),
+            (u"+库", self.add_card_pool),
+            (u"-库", self.reduce_card_pool),
         )
         for label, handle in button_labels:
             button = wx.Button(self, -1, label)
@@ -50,13 +54,13 @@ class MainPanel(wx.Panel):
         self.SetSizer(button_sizer)
 
     def use_card(self, event):
-        self.hand_cards -= 1
+        self.hand_card_amount -= 1
         use_button = event.GetEventObject()
         for i, button in enumerate(self.button_list):
             if use_button.GetLabelText() == button.GetLabelText():
-                for j in range(i, self.hand_cards):
+                for j in range(i, self.hand_card_amount):
                     self.button_list[j].SetLabelText(self.button_list[j + 1].GetLabelText())
-                self.button_list[self.hand_cards].Hide()
+                self.button_list[self.hand_card_amount].Hide()
                 break
 
     def reset(self, event):
@@ -66,14 +70,46 @@ class MainPanel(wx.Panel):
     def draw_card(self, event):
         self.card_pool_size -= 1
         self.next_card_number += 1
-        # print self.card_pool
-        if self.hand_cards == 10:
+        # print self.card_pool_size  # *****
+        if self.hand_card_amount == 10:
             return
-        self.button_list[self.hand_cards].SetLabelText(str(self.next_card_number - 1))
-        self.button_list[self.hand_cards].Show()
-        self.hand_cards += 1
+        self.button_list[self.hand_card_amount].SetLabelText(str(self.next_card_number - 1))
+        self.button_list[self.hand_card_amount].Show()
+        self.hand_card_amount += 1
         if self.card_pool_size == 0:
             event.GetEventObject().Disable()
+
+    def add_known_name_card(self, card_name):
+        if self.hand_card_amount == 10:
+            return
+        self.button_list[self.hand_card_amount].SetLabelText(card_name)
+        self.button_list[self.hand_card_amount].Show()
+        self.hand_card_amount += 1
+
+    def add_monster(self, event):
+        self.add_known_name_card(u"随从")
+
+    def add_magic(self, event):
+        self.add_known_name_card(u"法术")
+
+    def add_steal(self, event):
+        self.add_known_name_card(u"窃取")
+
+    def add_machine_parts(self, event):
+        self.add_known_name_card(u"零件")
+
+    def add_coin(self, event):
+        self.add_known_name_card(u"硬币")
+
+    def add_banana(self, event):
+        self.add_known_name_card(u"香蕉")
+        self.add_known_name_card(u"香蕉")
+
+    def add_card_pool(self, event):
+        self.card_pool_size += 1
+
+    def reduce_card_pool(self, event):
+        self.card_pool_size -= 1
 
 
 class MainFrame(wx.Frame):

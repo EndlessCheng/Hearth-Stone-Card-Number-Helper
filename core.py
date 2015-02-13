@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import wx  # wx.version() == '3.0.2.0'
+import choose_order
 
 
 WINDOW_SIZE = (380, 123)
@@ -9,8 +10,9 @@ MAX_CARD_SIZE = 10
 
 
 class MainPanel(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, opp_first):
         wx.Panel.__init__(self, parent)
+        self.parent = parent
         self.SetBackgroundColour(wx.Colour(207, 230, 255))
         button_sizer = wx.GridSizer(rows=2, cols=MAX_CARD_SIZE)
 
@@ -57,7 +59,8 @@ class MainPanel(wx.Panel):
                 break
 
     def reset(self, event):
-        pass
+        self.parent.Close()
+        choose_order.main()
 
     def draw_card(self, event):
         self.card_pool_size -= 1
@@ -73,17 +76,17 @@ class MainPanel(wx.Panel):
 
 
 class MainFrame(wx.Frame):
-    def __init__(self):
+    def __init__(self, opp_first):
         wx.Frame.__init__(self, None, title=u"炉石传说-对手牌号记录器", size=WINDOW_SIZE)
-        main_panel = MainPanel(self)
+        main_panel = MainPanel(self, opp_first)
         box_sizer = wx.BoxSizer(wx.HORIZONTAL)
         box_sizer.Add(main_panel, 1, wx.EXPAND)
         self.SetSizer(box_sizer)
 
 
-def main():
+def main(opp_first):
     app = wx.App()
-    frame = MainFrame()
+    frame = MainFrame(opp_first)
     frame.Show()
     app.MainLoop()
 

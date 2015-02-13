@@ -32,24 +32,37 @@ class MainPanel(wx.Panel):
             self.button_list.append(button)
 
         if not opp_first:
-            self.add_known_name_card(u"硬币")
+            self.add_card(u"硬币")
+
+        self.draw_button = wx.Button(self, -1, u"抽牌")
+        self.draw_button.Bind(wx.EVT_BUTTON, self.draw_card)
+        button_sizer.Add(self.draw_button, 0, wx.EXPAND | wx.ALL, 3)
 
         button_labels = (
-            (u"重置", self.reset),
-            (u"抽牌", self.draw_card),
             (u"随从", self.add_monster),
             (u"法术", self.add_magic),
             (u"窃取", self.add_steal),
-            (u"零件", self.add_machine_parts),
+            (u"衍生", self.add_derivation),
             (u"硬币", self.add_coin),
-            (u"香蕉", self.add_banana),
             (u"+库", self.add_card_pool),
-            (u"-库", self.reduce_card_pool),
         )
         for label, handle in button_labels:
             button = wx.Button(self, -1, label)
             button.Bind(wx.EVT_BUTTON, handle)
             button_sizer.Add(button, 0, wx.EXPAND | wx.ALL, 3)
+
+        self.reduce_card_pool_button = wx.Button(self, -1, u"-库")
+        self.reduce_card_pool_button.Bind(wx.EVT_BUTTON, self.reduce_card_pool)
+        button_sizer.Add(self.reduce_card_pool_button, 0, wx.EXPAND | wx.ALL, 3)
+
+        self.left = wx.Button(self, -1, str(self.card_pool_size))
+        self.left.Bind(wx.EVT_BUTTON, None)
+        self.left.Disable()
+        button_sizer.Add(self.left, 0, wx.EXPAND | wx.ALL, 3)
+
+        self.reset_button = wx.Button(self, -1, u"重置")
+        self.reset_button.Bind(wx.EVT_BUTTON, self.reset)
+        button_sizer.Add(self.reset_button, 0, wx.EXPAND | wx.ALL, 3)
 
         self.SetSizer(button_sizer)
 
@@ -63,53 +76,52 @@ class MainPanel(wx.Panel):
                 self.button_list[self.hand_card_amount].Hide()
                 break
 
-    def reset(self, event):
-        self.parent.Close()
-        choose_order.main()
-
-    def draw_card(self, event):
-        self.card_pool_size -= 1
-        self.next_card_number += 1
-        # print self.card_pool_size  # *****
-        if self.hand_card_amount == 10:
-            return
-        self.button_list[self.hand_card_amount].SetLabelText(str(self.next_card_number - 1))
-        self.button_list[self.hand_card_amount].Show()
-        self.hand_card_amount += 1
+    def change_card_pool_size(self, add):
+        self.card_pool_size += add
+        self.left.SetLabelText(str(self.card_pool_size))
         if self.card_pool_size == 0:
-            event.GetEventObject().Disable()
+            self.draw_button.Disable()
+            self.reduce_card_pool_button.Disable()
+        else:
+            self.draw_button.Enable()
+            self.reduce_card_pool_button.Enable()
 
-    def add_known_name_card(self, card_name):
+    def add_card(self, card_name):
         if self.hand_card_amount == 10:
             return
         self.button_list[self.hand_card_amount].SetLabelText(card_name)
         self.button_list[self.hand_card_amount].Show()
         self.hand_card_amount += 1
 
+    def draw_card(self, event):
+        self.change_card_pool_size(-1)
+        self.add_card(str(self.next_card_number))
+        self.next_card_number += 1
+
     def add_monster(self, event):
-        self.add_known_name_card(u"随从")
+        self.add_card(u"随从")
 
     def add_magic(self, event):
-        self.add_known_name_card(u"法术")
+        self.add_card(u"法术")
 
     def add_steal(self, event):
-        self.add_known_name_card(u"窃取")
+        self.add_card(u"窃取")
 
-    def add_machine_parts(self, event):
-        self.add_known_name_card(u"零件")
+    def add_derivation(self, event):
+        self.add_card(u"衍生")
 
     def add_coin(self, event):
-        self.add_known_name_card(u"硬币")
-
-    def add_banana(self, event):
-        self.add_known_name_card(u"香蕉")
-        self.add_known_name_card(u"香蕉")
+        self.add_card(u"硬币")
 
     def add_card_pool(self, event):
-        self.card_pool_size += 1
+        self.change_card_pool_size(1)
 
     def reduce_card_pool(self, event):
-        self.card_pool_size -= 1
+        self.change_card_pool_size(-1)
+
+    def reset(self, event):
+        self.parent.Close()
+        choose_order.main()
 
 
 class MainFrame(wx.Frame):

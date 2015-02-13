@@ -3,12 +3,13 @@ import wx  # wx.version() == '3.0.2.0'
 import core
 
 
+WINDOW_POS = (50, 50)
 WINDOW_SIZE = (380, 123)
 
 
 class MyFrame(wx.Frame):
     def __init__(self):
-        wx.Frame.__init__(self, None, title=u"炉石传说-对手牌号记录器", size=WINDOW_SIZE)
+        wx.Frame.__init__(self, None, title=u"炉石传说-对手牌号记录器", pos=WINDOW_POS, size=WINDOW_SIZE)
         panel = wx.Panel(self)
 
         button_sizer = wx.GridSizer(rows=1, cols=2)

@@ -4,13 +4,14 @@ import core
 
 
 WINDOW_POS = (50, 50)
-WINDOW_SIZE = (380, 123)
+WINDOW_SIZE = (450, 123)
 
 
 class MyFrame(wx.Frame):
     def __init__(self):
-        wx.Frame.__init__(self, None, title=u"炉石传说-对手牌号记录器", pos=WINDOW_POS, size=WINDOW_SIZE)
+        wx.Frame.__init__(self, None, title=u"炉石传说-对手牌号记录器 制作: Σndless", pos=WINDOW_POS, size=WINDOW_SIZE)
         panel = wx.Panel(self)
+        panel.SetBackgroundColour(wx.Colour(207, 230, 255))
 
         button_sizer = wx.GridSizer(rows=1, cols=2)
 
